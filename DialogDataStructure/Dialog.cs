@@ -60,10 +60,10 @@ public class Dialog
         {
         }
 
-        public Branch(Branch branch) // copy constructor
+        public Branch(Branch branch)
         {
-            Texts = Texts.ConvertAll(e => e.Copy());
-            NextBranches = NextBranches.ConvertAll(e => e.Copy());
+            Texts = branch.Texts.ConvertAll(e => e.Copy());
+            NextBranches = branch.NextBranches.ConvertAll(e => e.Copy());
             NextBranches.ForEach(e => e.Previous = this);
         }
 
@@ -84,7 +84,7 @@ public class Dialog
     {
     }
 
-    public Dialog(Dialog dialog) // copy constructor
+    public Dialog(Dialog dialog)
     {
         Name = dialog.Name;
         Start = dialog.Start.Copy();
