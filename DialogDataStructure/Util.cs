@@ -8,10 +8,13 @@ namespace DialogDataStructure;
 public static class Util
 {
     public static Dialog.Text NewText(string id, string content) => new(id, content);
-    public static Dialog.Branch NewBranch(List<Dialog.Text> texts) => NewBranch(texts, []);
+    
     public static Dialog.Branch NewBranch(List<Dialog.Text> texts, List<Dialog.Branch> nextBranches) =>
         new(){Texts = texts, NextBranches = nextBranches};
-    public static Dialog NewDialog(string name, Dialog.Branch start) => new(){Name = name, Start = start};
+    public static Dialog.Branch NewBranch(List<Dialog.Text> texts) => NewBranch(texts, []);
+    
+    public static Dialog NewDialog(string? name, Dialog.Branch start) => new(){Name = name, Start = start};
+    public static Dialog NewDialog(Dialog.Branch start) => NewDialog(null, start);
     
     /*******************************************************************/
     
