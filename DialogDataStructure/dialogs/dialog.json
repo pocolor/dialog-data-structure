@@ -1,0 +1,121 @@
+{
+  "Name": "A mathematician chad.",
+  "Start": {
+    "Texts": [
+      {
+        "Id": "Npc",
+        "Content": "Hello adventurer!"
+      },
+      {
+        "Id": "Npc",
+        "Content": "I have a puzzle for you."
+      },
+      {
+        "Id": "Npc",
+        "Content": "What is 1 + 1 equal to?"
+      }
+    ],
+    "NextBranches": [
+      {
+        "Texts": [
+          {
+            "Id": "Player",
+            "Content": "Isn't it 1?"
+          },
+          {
+            "Id": "Npc",
+            "Content": "No! This is not boolean algebra."
+          },
+          {
+            "Id": "Npc",
+            "Content": "It's 2 you nerd..."
+          },
+          {
+            "Id": "Npc",
+            "Content": "01101110 01100101 01110010 01100100"
+          },
+          {
+            "Id": "Player",
+            "Content": "Hey, I'm not a nerd..."
+          },
+          {
+            "Id": "Npc",
+            "Content": "Sure..."
+          }
+        ]
+      },
+      {
+        "Texts": [
+          {
+            "Id": "Player",
+            "Content": "Oh, I know! The answer is 2!"
+          },
+          {
+            "Id": "Npc",
+            "Content": "Yes! Congratulations!"
+          },
+          {
+            "Id": "Npc",
+            "Content": "You are smarter than Dambibimbus."
+          },
+          {
+            "Id": "Player",
+            "Content": "Who's that?"
+          },
+          {
+            "Id": "Npc",
+            "Content": "Ehm, nobody..."
+          },
+          {
+            "Id": "Npc",
+            "Content": "Forget it."
+          }
+        ]
+      },
+      {
+        "Texts": [
+          {
+            "Id": "Player",
+            "Content": "It's definitely 3."
+          },
+          {
+            "Id": "Npc",
+            "Content": "Try again kid..."
+          }
+        ]
+      },
+      {
+        "Texts": [
+          {
+            "Id": "Player",
+            "Content": "Ugh..."
+          },
+          {
+            "Id": "Npc",
+            "Content": "No way you don't know..."
+          },
+          {
+            "Id": "Player",
+            "Content": "Hold on. Let me `npm install sum` real quick."
+          },
+          {
+            "Id": "Npc",
+            "Content": "Smartest JavaScript user I have ever encountered!"
+          }
+        ]
+      },
+      {
+        "Texts": [
+          {
+            "Id": "Player",
+            "Content": "00000010"
+          },
+          {
+            "Id": "Npc",
+            "Content": "11000000"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema",
+  
+  "definitions": {
+    
+    "text": {
+      "type": "object",
+      "properties": {
+        "Id": {
+          "type": "string"
+        },
+        "Content": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "Id",
+        "Content"
+      ]
+    },
+    
+    "branch": {
+      "type": "object",
+      "properties": {
+        "Texts": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/definitions/text"
+          }
+        },
+        "NextBranches": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/branch"
+          }
+        }
+      },
+      "required": [
+        "Texts"
+      ],
+      "additionalProperties": false
+    }
+  },
+  
+  "type": "object",
+  "properties": {
+    "Name": {
+      "type": "string"
+    },
+    "Start": {
+      "$ref": "#/definitions/branch"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "Start"
+  ]
+}
