@@ -2,50 +2,63 @@
 
 internal static class Program
 {
-    private static Dialog.Text PlayerText(string content) => new("Player", content);
-    private static Dialog.Text NpcText(string content) => new("Npc", content);
-
     private static void Main()
     {
-        var dialog = DialogBuilder
-            .Create("Mega super duper dialog")
-            .StartBranch(b => b
+        Util.ConsoleRunDialog(ExampleDialogBuilder());
+        Util.ConsoleRunDialog(ExampleDialogDsl());
+        Util.ConsoleRunDialog(DialogSerializer.Load("../../../dialogs/dialog.json"));
+    }
+
+    private static Dialog ExampleDialogBuilder()
+    {
+        return DialogBuilder
+            .Create("Example dialog cat")
+            .StartBranch(start => start
                 .Texts(
-                    NpcText("Hello adventurer!"),
-                    NpcText("I have a puzzle for you."),
-                    NpcText("What is 1 + 1 equal to?")
+                    new Dialog.Text("Cat", "Meow"),
+                    new Dialog.Text("Person", "Hey! You like my cat?")
                 )
-                .Branch(b2 => b2
+                .Branch(branch => branch
                     .Texts(
-                        PlayerText("It's 1!"),
-                        NpcText("This is not boolean algebra. It's 2.")
+                        new Dialog.Text("You", "No."),
+                        new Dialog.Text("You", "*runs away*")
                     )
                 )
-                .Branch(b2 => b2
+                .Branch(branch => branch
                     .Texts(
-                        PlayerText("It's 2!"),
-                        NpcText("You are right!"),
-                        NpcText("You are the smartest JavaScript user I have ever encountered.")
+                        new Dialog.Text("You", "Yes.")
                     )
                 )
-                .Branch(b2 => b2
+                .Branch(branch => branch
                     .Texts(
-                        PlayerText("It's 3!"),
-                        NpcText("No dumbass. It's 2.")
+                        new Dialog.Text("You", "Maybe.")
                     )
                 )
-                .Branch(b2 => b2
-                    .Texts(
-                        PlayerText("It's 4!"),
-                        NpcText("No dumbass. It's 2."),
-                        PlayerText("Am I really this dumb?"),
-                        NpcText("Seems so...")
-                    )
-                )
-            )
-            .Build();
+            ).Build();
+    }
 
-
-        Util.ConsoleRunDialog(dialog);
+    private static Dialog ExampleDialogDsl()
+    {
+        return DialogDsl
+            .Dialog("Example dialog dog")
+            .Start(
+                DialogDsl.Branch()
+                    .Texts(
+                        ("Dog", "Bark"),
+                        ("Person", "Hey! You like my dog?")
+                    )
+                    .Then(
+                        DialogDsl.Branch().Texts(
+                            ("You", "No."),
+                            ("You", "*runs away*")
+                        ),
+                        DialogDsl.Branch().Texts(
+                            ("You", "Yes.")
+                        ),
+                        DialogDsl.Branch().Texts(
+                            ("You", "Maybe.")
+                        )
+                    )
+            );
     }
 }
