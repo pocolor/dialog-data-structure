@@ -34,9 +34,9 @@ public sealed class BranchNode
     private readonly List<Dialog.Text> _texts = [];
     private readonly List<BranchNode> _next = [];
 
-    public BranchNode Texts(params Tuple<string, string>[] texts)
+    public BranchNode Texts(params (string Id, string Content)[] texts)
     {
-        _texts.AddRange(texts.Select(e => new Dialog.Text(e.Item1, e.Item2)));
+        _texts.AddRange(texts.Select(e => new Dialog.Text(e.Id, e.Content)));
         return this;
     }
 

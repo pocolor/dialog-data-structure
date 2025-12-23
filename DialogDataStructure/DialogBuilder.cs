@@ -32,9 +32,9 @@ public class BranchBuilder(Dialog.Branch? previous)
         Previous = previous
     };
 
-    public BranchBuilder Texts(params Tuple<string, string>[] texts)
+    public BranchBuilder Texts(params (string Id, string Content)[] texts)
     {
-        _branch.Texts.AddRange(texts.Select(t => new Dialog.Text(t.Item1, t.Item2)));
+        _branch.Texts.AddRange(texts.Select(t => new Dialog.Text(t.Id, t.Content)));
         return this;
     }
 
