@@ -39,7 +39,7 @@ public class Dialog
         public override string ToString() => $"{nameof(Text)}(Id = \"{Id}\", Content = \"{Content})\"";
     }
 
-    public class Branch : IEnumerable<Text>
+    public class Branch
     {
         [JsonIgnore, XmlIgnore] public Branch? Previous { get; set; }
 
@@ -53,8 +53,7 @@ public class Dialog
 
         [JsonIgnore, XmlIgnore] public bool Continues => NextBranches.Count > 0;
 
-        IEnumerator IEnumerable.GetEnumerator() => Texts.GetEnumerator();
-        public IEnumerator<Text> GetEnumerator() => Texts.GetEnumerator();
+        public void LinkPrevious() => NextBranches.ForEach(e => { e.Previous = this; e.LinkPrevious(); });
 
         public Branch()
         {
