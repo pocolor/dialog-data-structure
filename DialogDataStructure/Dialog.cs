@@ -1,22 +1,20 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Text.Json.Serialization;
-using System.Xml.Serialization;
 
 namespace DialogDataStructure;
 
-[XmlRoot("Dialog")]
 public class Dialog
 {
-    [JsonInclude] public string? Name { get; set; }
+    public string? Name { get; set; }
 
-    [JsonInclude] public Branch Start { get; set; } = null!;
+    public Branch Start { get; set; } = null!;
 
     public record Text
     {
-        [JsonInclude] public string Id { get; set; } = "";
+        public string Id { get; set; } = "";
 
-        [JsonInclude] public string Content { get; set; } = "";
+        public string Content { get; set; } = "";
 
         public Text()
         {
@@ -40,17 +38,15 @@ public class Dialog
 
     public class Branch
     {
-        [JsonIgnore, XmlIgnore] public Branch? Previous { get; set; }
+        [JsonIgnore] public Branch? Previous { get; set; }
 
-        [JsonInclude, XmlArray("Texts"), XmlArrayItem("Text")]
         public List<Text> Texts { get; set; } = [];
 
-        [JsonInclude, XmlArray("NextBranches"), XmlArrayItem("Branch")]
         public List<Branch> NextBranches { get; set; } = [];
 
-        [JsonIgnore, XmlIgnore] public bool HasPrevious => Previous is not null;
+        [JsonIgnore] public bool HasPrevious => Previous is not null;
 
-        [JsonIgnore, XmlIgnore] public bool Continues => NextBranches.Count > 0;
+        [JsonIgnore] public bool Continues => NextBranches.Count > 0;
 
         public void LinkPrevious() => NextBranches.ForEach(e => { e.Previous = this; e.LinkPrevious(); });
 
