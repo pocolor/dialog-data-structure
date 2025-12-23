@@ -28,7 +28,7 @@ public class ImmutableDialog
         public override string ToString() => $"{nameof(ImmutableText)}(Id = \"{Id}\", Content = \"{Content})\"";
     }
 
-    public class ImmutableBranch : IEnumerable<ImmutableText>
+    public class ImmutableBranch
     {
         public ImmutableBranch? Previous { get; private set; }
         public ImmutableList<ImmutableText> Texts { get; }
@@ -36,9 +36,6 @@ public class ImmutableDialog
 
         public bool HasPrevious => Previous is not null;
         public bool Continues => NextBranches.Count > 0;
-
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-        public IEnumerator<ImmutableText> GetEnumerator() => Texts.GetEnumerator();
 
         public ImmutableBranch(Dialog.Branch branch)
         {
