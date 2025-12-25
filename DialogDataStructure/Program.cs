@@ -4,61 +4,40 @@ internal static class Program
 {
     private static void Main()
     {
-        Util.ConsoleRunDialog(ExampleDialogBuilder());
-        Util.ConsoleRunDialog(ExampleDialogDsl());
-        Util.ConsoleRunDialog(DialogSerializer.Load("../../../dialogs/dialog.json"));
+        var dialog = ExampleDialogBuilder();
+        DialogSerializer.Save(dialog, "../../../dialogs/dialog.tmp.json");
+        
+        Util.ConsoleRunDialog(dialog);
+        Util.ConsoleRunDialog(DialogSerializer.Load<string, Util.NameText>("../../../dialogs/dialog.json"));
     }
 
-    private static Dialog ExampleDialogBuilder()
+    private static Dialog<string, Util.NameText> ExampleDialogBuilder()
     {
-        return DialogBuilder
+        return DialogBuilder<string, Util.NameText>
             .Create("Example dialog cat")
             .StartBranch(start => start
-                .Texts(
-                    new Dialog.Text("Cat", "Meow"),
-                    new Dialog.Text("Person", "Hey! You like my cat?")
+                .Nodes(
+                    new Util.NameText("Cat", "*meow*"),
+                    new Util.NameText("Person", "Hey! You like my cat?")
                 )
                 .Branch(branch => branch
-                    .Texts(
-                        new Dialog.Text("You", "No."),
-                        new Dialog.Text("You", "*runs away*")
+                    .BeginNode("No")
+                    .Nodes(
+                        new Util.NameText("You", "I like dogs.")
                     )
                 )
                 .Branch(branch => branch
-                    .Texts(
-                        new Dialog.Text("You", "Yes.")
+                    .BeginNode("Maybe")
+                    .Nodes(
+                        new Util.NameText("You", "I don't really like cats.")
                     )
                 )
                 .Branch(branch => branch
-                    .Texts(
-                        new Dialog.Text("You", "Maybe.")
+                    .BeginNode("Yes")
+                    .Nodes(
+                        new Util.NameText("You", "I'm a normal person so I do like cats.")
                     )
                 )
             ).Build();
-    }
-
-    private static Dialog ExampleDialogDsl()
-    {
-        return DialogDsl
-            .Dialog("Example dialog dog")
-            .Start(
-                DialogDsl.Branch()
-                    .Texts(
-                        ("Dog", "Bark"),
-                        ("Person", "Hey! You like my dog?")
-                    )
-                    .Then(
-                        DialogDsl.Branch().Texts(
-                            ("You", "No."),
-                            ("You", "*runs away*")
-                        ),
-                        DialogDsl.Branch().Texts(
-                            ("You", "Yes.")
-                        ),
-                        DialogDsl.Branch().Texts(
-                            ("You", "Maybe.")
-                        )
-                    )
-            );
     }
 }

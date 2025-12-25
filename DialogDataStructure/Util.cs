@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 
@@ -7,60 +6,59 @@ namespace DialogDataStructure;
 
 public static class Util
 {
-    public static Dialog.Text NewText(string id, string content) => new(id, content);
-    
-    public static Dialog.Branch NewBranch(List<Dialog.Text> texts, List<Dialog.Branch> nextBranches) =>
-        new(){Texts = texts, NextBranches = nextBranches};
-    public static Dialog.Branch NewBranch(List<Dialog.Text> texts) => NewBranch(texts, []);
-    
-    public static Dialog NewDialog(string? name, Dialog.Branch start) => new(){Name = name, Start = start};
-    public static Dialog NewDialog(Dialog.Branch start) => NewDialog(null, start);
+    public struct NameText(string name = "", string text = "") : ICloneable
+    {
+        public string Name { get; set; } = name;
+        public string Text { get; set; } = text;
+
+        public object Clone() => new NameText(Name, Text);
+    }
     
     /*******************************************************************/
     
-    public static void ConsoleWriteBranchTexts(Dialog.Branch branch, double timeScale = 0)
+    public static void ConsoleWriteBranchNodes(Dialog<string, NameText>.Branch<string, NameText> branch, double timeScale = 0)
     {
         Thread.Sleep(1000);
-        foreach (var t in branch.Texts)
+        foreach (var node in branch.Nodes)
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.Write(t.Id);
+            Console.Write(node.Name);
             Console.ResetColor();
-            Console.Write($": {t.Content}\n");
-            Thread.Sleep(1000 * (int)Math.Ceiling(Math.Log(t.Content.Length) * timeScale));
+            Console.Write($": {node.Text}\n");
+            Thread.Sleep(1000 * (int)Math.Ceiling(Math.Log(node.Text.Length) * timeScale));
         }
     }
 
-    public static void ConsoleWriteBranchChoices(Dialog.Branch branch)
+    public static void ConsoleWriteBranchChoices(Dialog<string, NameText>.Branch<string, NameText> branch)
     {
         for (var i = 0; i < branch.NextBranches.Count; i++)
         {
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.Write($"[{i + 1}]");
             Console.ResetColor();
-            Console.Write($" {branch.NextBranches[i].Texts[0].Content}\n");
+            Console.Write($" {branch.NextBranches[i].BeginNode}\n");
         }
     }
 
-    public static void ConsoleReadBranchChoice(Dialog.Branch branch, out int choice)
+    public static void ConsoleReadBranchChoice(Dialog<string, NameText>.Branch<string, NameText> branch, out int choice)
     {
         Debug.Assert(branch.NextBranches.Count < 10, "for more than 9 choices implement a different reading technique");
         Debug.Assert(branch.NextBranches.Count > 0);
         
         while (true)
         {
-            var c = Console.ReadKey(true).KeyChar - '1';
-            if (c < 0 || c >= branch.NextBranches.Count) continue;
-            choice = c;
+            var i = Console.ReadKey(true).KeyChar - '1';
+            if (i < 0 || i >= branch.NextBranches.Count) continue;
+            choice = i;
             
             Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine($"[{char.ConvertFromUtf32(c + '1')}]");
+            Console.WriteLine($"[{char.ConvertFromUtf32(i + '1')}]: {branch.NextBranches[i].BeginNode}");
             Console.ResetColor();
             break;
         }
     }
 
-    public static void ConsoleRunDialog(Dialog dialog, double timeScale = 0.1)
+    public static void ConsoleRunDialog(Dialog<string, NameText> dialog, double timeScale = 0.1)
     {
         Console.ForegroundColor = ConsoleColor.Red;
         Console.WriteLine(dialog.Name ?? "Unnamed Dialog");
@@ -69,68 +67,7 @@ public static class Util
         var curr = dialog.Start;
         while (true)
         {
-            ConsoleWriteBranchTexts(curr, timeScale);
-            if (!curr.Continues) break;
-            ConsoleWriteBranchChoices(curr);
-            ConsoleReadBranchChoice(curr, out var choice);
-            curr = curr.NextBranches[choice];
-        }
-    }
-    
-    /*******************************************************************/
-
-    public static void ConsoleWriteBranchTexts(ImmutableDialog.ImmutableBranch branch, double timeScale = 0)
-    {
-        Thread.Sleep(1000);
-        foreach (var t in branch.Texts)
-        {
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.Write(t.Id);
-            Console.ResetColor();
-            Console.Write($": {t.Content}\n");
-            Thread.Sleep(1000 * (int)Math.Ceiling(Math.Log(t.Content.Length) * timeScale));
-        }
-    }
-
-    public static void ConsoleWriteBranchChoices(ImmutableDialog.ImmutableBranch branch)
-    {
-        for (var i = 0; i < branch.NextBranches.Count; i++)
-        {
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.Write($"[{i + 1}]");
-            Console.ResetColor();
-            Console.Write($" {branch.NextBranches[i].Texts[0].Content}\n");
-        }
-    }
-
-    public static void ConsoleReadBranchChoice(ImmutableDialog.ImmutableBranch branch, out int choice)
-    {
-        Debug.Assert(branch.NextBranches.Count < 10, "for more than 9 choices implement a different reading technique");
-        Debug.Assert(branch.NextBranches.Count > 0);
-        
-        while (true)
-        {
-            var c = Console.ReadKey(true).KeyChar - '1';
-            if (c < 0 || c >= branch.NextBranches.Count) continue;
-            choice = c;
-            
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine($"[{char.ConvertFromUtf32(c + '1')}]");
-            Console.ResetColor();
-            return;
-        }
-    }
-
-    public static void ConsoleRunDialog(ImmutableDialog dialog, double timeScale = 0.1)
-    {
-        Console.ForegroundColor = ConsoleColor.Red;
-        Console.WriteLine(dialog.Name ?? "Unnamed Dialog");
-        Console.ResetColor();
-
-        var curr = dialog.Start;
-        while (true)
-        {
-            ConsoleWriteBranchTexts(curr, timeScale);
+            ConsoleWriteBranchNodes(curr, timeScale);
             if (!curr.Continues) break;
             ConsoleWriteBranchChoices(curr);
             ConsoleReadBranchChoice(curr, out var choice);

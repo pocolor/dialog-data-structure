@@ -1,52 +1,55 @@
 using System;
-using System.Linq;
 
 namespace DialogDataStructure;
 
-public class DialogBuilder
+public class DialogBuilder<TBeginNode, TNode>
+    where TBeginNode : ICloneable
+    where TNode : ICloneable
 {
-    private readonly Dialog _dialog = new();
+    private readonly Dialog<TBeginNode, TNode> _dialog = new();
 
     public DialogBuilder(string? name = null)
     {
         _dialog.Name = name;
     }
 
-    public static DialogBuilder Create(string? name = null) => new(name);
+    public static DialogBuilder<TBeginNode, TNode> Create(string? name = null) => new(name);
 
-    public DialogBuilder StartBranch(Action<BranchBuilder> build)
+    public DialogBuilder<TBeginNode, TNode> StartBranch(Action<BranchBuilder<TBeginNode, TNode>> build)
     {
-        var branchBuilder = new BranchBuilder(null);
+        var branchBuilder = new BranchBuilder<TBeginNode, TNode>(null);
         build(branchBuilder);
         _dialog.Start = branchBuilder.Build();
         return this;
     }
 
-    public Dialog Build() => _dialog.Copy();
+    public Dialog<TBeginNode, TNode> Build() => (Dialog<TBeginNode, TNode>) _dialog.Clone();
 }
 
-public class BranchBuilder(Dialog.Branch? previous)
+public class BranchBuilder<TBeginNode, TNode>(Dialog<TBeginNode, TNode>.Branch<TBeginNode, TNode>? previous)
+    where TBeginNode : ICloneable
+    where TNode : ICloneable
 {
-    private readonly Dialog.Branch _branch = new()
+    private readonly Dialog<TBeginNode, TNode>.Branch<TBeginNode, TNode> _branch = new()
     {
         Previous = previous
     };
 
-    public BranchBuilder Texts(params (string Id, string Content)[] texts)
+    public BranchBuilder<TBeginNode, TNode> BeginNode(TBeginNode beginNode)
     {
-        _branch.Texts.AddRange(texts.Select(t => new Dialog.Text(t.Id, t.Content)));
+        _branch.BeginNode = beginNode;
         return this;
     }
 
-    public BranchBuilder Texts(params Dialog.Text[] texts)
+    public BranchBuilder<TBeginNode, TNode> Nodes(params TNode[] nodes)
     {
-        _branch.Texts.AddRange(texts.Select(e => e.Copy()));
+        _branch.Nodes.AddRange(nodes);
         return this;
     }
 
-    public BranchBuilder Branch(Action<BranchBuilder> build)
+    public BranchBuilder<TBeginNode, TNode> Branch(Action<BranchBuilder<TBeginNode, TNode>> build)
     {
-        var childBuilder = new BranchBuilder(_branch);
+        var childBuilder = new BranchBuilder<TBeginNode, TNode>(_branch);
         build(childBuilder);
 
         var child = childBuilder.Build();
@@ -56,8 +59,8 @@ public class BranchBuilder(Dialog.Branch? previous)
         return this;
     }
 
-    public Dialog.Branch Build()
+    public Dialog<TBeginNode, TNode>.Branch<TBeginNode, TNode> Build()
     {
-        return _branch.Texts.Count == 0 ? throw new InvalidOperationException("Branch must contain at least one Text.") : _branch;
+        return _branch.Nodes.Count == 0 ? throw new InvalidOperationException("Branch must contain at least one Text.") : _branch;
     }
 }

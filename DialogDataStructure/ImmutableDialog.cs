@@ -1,60 +1,42 @@
+using System;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 
 namespace DialogDataStructure;
 
-public class ImmutableDialog
+public class ImmutableDialog<TBranchBeginNode, TBranchNode>
+    where TBranchBeginNode : ICloneable
+    where TBranchNode : ICloneable
 {
     public string? Name { get; }
-    public ImmutableBranch Start { get; }
+    public ImmutableBranch<TBranchBeginNode, TBranchNode> Start { get; }
 
-    public record ImmutableText(string Id, string Content)
+    public class ImmutableBranch<TBeginNode, TNode>
+        where TBeginNode : ICloneable
+        where TNode : ICloneable
     {
-        public ImmutableText(Dialog.Text text) : this(text.Id, text.Content)
-        {
-        }
-
-        public ImmutableText(ImmutableText text) // copy constructor
-        {
-            Id = text.Id;
-            Content = text.Content;
-        }
-
-        public ImmutableText Copy() => new(this);
-        public Dialog.Text ToText() => new(Id, Content);
-        public override string ToString() => $"{nameof(ImmutableText)}(Id = \"{Id}\", Content = \"{Content})\"";
-    }
-
-    public class ImmutableBranch
-    {
-        public ImmutableBranch? Previous { get; private set; }
-        public ImmutableList<ImmutableText> Texts { get; }
-        public ImmutableList<ImmutableBranch> NextBranches { get; }
+        public ImmutableBranch<TBeginNode, TNode>? Previous { get; private set; }
+        public TBeginNode BeginNode { get; }
+        public ImmutableList<TNode> Nodes { get; }
+        public ImmutableList<ImmutableBranch<TBeginNode, TNode>> NextBranches { get; }
 
         public bool HasPrevious => Previous is not null;
         public bool Continues => NextBranches.Count > 0;
 
-        public ImmutableBranch(Dialog.Branch branch)
+        public ImmutableBranch(Dialog<TBranchBeginNode, TBranchNode>.Branch<TBeginNode, TNode> branch)
         {
-            Texts = branch.Texts.ConvertAll(e => e.ToImmutableText()).ToImmutableList();
+            BeginNode = branch.BeginNode;
+            Nodes = branch.Nodes.ConvertAll(e => (TNode) e.Clone()).ToImmutableList();
             NextBranches = branch.NextBranches.ConvertAll(e => e.ToImmutableBranch()).ToImmutableList();
             NextBranches.ForEach(e => e.Previous = this);
         }
 
-        public ImmutableBranch(ImmutableBranch branch) // copy constructor
+        public Dialog<TBeginNode, TNode>.Branch<TBeginNode, TNode> ToBranch()
         {
-            Texts = branch.Texts.ConvertAll(e => e.Copy());
-            NextBranches = branch.NextBranches.ConvertAll(e => e.Copy());
-            NextBranches.ForEach(e => e.Previous = this);
-        }
-
-        public ImmutableBranch Copy() => new(this);
-
-        public Dialog.Branch ToBranch()
-        {
-            Dialog.Branch branch = new();
-            branch.Texts = Texts.ConvertAll(e => e.ToText()).ToList();
+            Dialog<TBeginNode, TNode>.Branch<TBeginNode, TNode> branch = new();
+            branch.BeginNode = BeginNode;
+            branch.Nodes = Nodes.ConvertAll(e => (TNode) e.Clone()).ToList();
             branch.NextBranches = NextBranches.ConvertAll(e => e.ToBranch()).ToList();
             branch.NextBranches.ForEach(e => e.Previous = branch);
             return branch;
@@ -63,29 +45,21 @@ public class ImmutableDialog
         public override string ToString()
         {
             return new StringBuilder()
-                .Append(nameof(ImmutableBranch)).Append('{')
+                .Append(nameof(ImmutableBranch<TBeginNode, TNode>)).Append('{')
                 .Append("Previous is not null = ").Append(Previous is not null).Append(", ")
-                .Append("Texts = ").Append(Texts).Append(", ")
+                .Append("Texts = ").Append(Nodes).Append(", ")
                 .Append("NextBranches.Count = ").Append(NextBranches.Count).Append('}')
                 .ToString();
         }
     }
 
-    public ImmutableDialog(Dialog dialog)
+    public ImmutableDialog(Dialog<TBranchBeginNode, TBranchNode> dialog)
     {
         Name = dialog.Name;
         Start = dialog.Start.ToImmutableBranch();
     }
 
-    public ImmutableDialog(ImmutableDialog dialog) // copy constructor
-    {
-        Name = dialog.Name;
-        Start = dialog.Start.Copy();
-    }
-
-    public ImmutableDialog Copy() => new(this);
-
-    public Dialog ToDialog() => new()
+    public Dialog<TBranchBeginNode, TBranchNode> ToDialog() => new()
     {
         Name = Name,
         Start = Start.ToBranch()
@@ -94,7 +68,7 @@ public class ImmutableDialog
     public override string ToString()
     {
         return new StringBuilder()
-            .Append(nameof(ImmutableDialog)).Append('{')
+            .Append(nameof(ImmutableDialog<TBranchBeginNode, TBranchNode>)).Append('{')
             .Append("Name = ").Append(Name).Append(", ")
             .Append("Start = ").Append(Start).Append('}')
             .ToString();
@@ -103,7 +77,14 @@ public class ImmutableDialog
 
 public static class DialogExtensions
 {
-    public static ImmutableDialog ToImmutableDialog(this Dialog dialog) => new(dialog);
-    public static ImmutableDialog.ImmutableBranch ToImmutableBranch(this Dialog.Branch branch) => new(branch);
-    public static ImmutableDialog.ImmutableText ToImmutableText(this Dialog.Text text) => new(text);
+    public static ImmutableDialog<T1, T2> ToImmutableDialog<T1, T2>(this Dialog<T1, T2> dialog)
+        where T1 : ICloneable
+        where T2 : ICloneable
+        => new(dialog);
+    public static ImmutableDialog<T1, T2>.ImmutableBranch<T3, T4> ToImmutableBranch<T1, T2, T3, T4>(this Dialog<T1, T2>.Branch<T3, T4> branch)
+        where T1 : ICloneable
+        where T2 : ICloneable
+        where T3 : ICloneable
+        where T4 : ICloneable
+        => new(branch);
 }

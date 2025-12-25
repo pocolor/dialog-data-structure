@@ -1,74 +1,64 @@
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.Json.Serialization;
 
 namespace DialogDataStructure;
 
-public class Dialog
+public class Dialog<TBranchBeginNode, TBranchNode> : ICloneable
+    where TBranchBeginNode : ICloneable
+    where TBranchNode : ICloneable
 {
     public string? Name { get; set; }
+    public Branch<TBranchBeginNode, TBranchNode> Start { get; set; }
 
-    public Branch Start { get; set; } = null!;
-
-    public record Text
+    public class Branch<TBeginNode, TNode> : ICloneable, IJsonOnSerializing, IJsonOnSerialized
+        where TBeginNode : ICloneable
+        where TNode : ICloneable
     {
-        public string Id { get; set; } = "";
+        [JsonIgnore] public Branch<TBeginNode, TNode>? Previous { get; set; }
 
-        public string Content { get; set; } = "";
-
-        public Text()
-        {
-        }
-
-        public Text(string id, string content)
-        {
-            Id = id;
-            Content = content;
-        }
-
-        public Text(Text text)
-        {
-            Id = text.Id;
-            Content = text.Content;
-        }
-
-        public Text Copy() => new(this);
-        public override string ToString() => $"{nameof(Text)}(Id = \"{Id}\", Content = \"{Content})\"";
-    }
-
-    public class Branch
-    {
-        [JsonIgnore] public Branch? Previous { get; set; }
-
-        public List<Text> Texts { get; set; } = [];
-
-        public List<Branch> NextBranches { get; set; } = [];
+        public TBeginNode? BeginNode { get; set; }
+        public List<TNode> Nodes { get; set; } = [];
+        public List<Branch<TBeginNode, TNode>> NextBranches { get; set; } = [];
 
         [JsonIgnore] public bool HasPrevious => Previous is not null;
-
         [JsonIgnore] public bool Continues => NextBranches.Count > 0;
 
-        public void LinkPrevious() => NextBranches.ForEach(e => { e.Previous = this; e.LinkPrevious(); });
+        public void OnSerializing()
+        {
+            if (Nodes.Count == 0) Nodes = null;
+            if (NextBranches.Count == 0) NextBranches = null;
+        }
+
+        public void OnSerialized()
+        {
+            Nodes ??= [];
+            NextBranches ??= [];
+        }
 
         public Branch()
         {
         }
 
-        public Branch(Branch branch)
+        public Branch(Branch<TBeginNode, TNode> branch)
         {
-            Texts = branch.Texts.ConvertAll(e => e.Copy());
-            NextBranches = branch.NextBranches.ConvertAll(e => e.Copy());
+            BeginNode = (TBeginNode?) branch.BeginNode?.Clone();
+            Nodes = branch.Nodes.ConvertAll(e => (TNode) e.Clone());
+            NextBranches = branch.NextBranches.ConvertAll(e => (Branch<TBeginNode, TNode>) e.Clone());
             NextBranches.ForEach(e => e.Previous = this);
         }
 
-        public Branch Copy() => new(this);
+        public object Clone() => new Branch<TBeginNode, TNode>(this);
+        public void LinkPrevious() => NextBranches.ForEach(e => { e.Previous = this; e.LinkPrevious(); });
 
         public override string ToString()
         {
             return new StringBuilder()
-                .Append(nameof(Branch)).Append('{')
+                .Append(nameof(Branch<TBeginNode, TNode>)).Append('{')
                 .Append("Previous is not null = ").Append(Previous is not null).Append(", ")
-                .Append("Texts = ").Append(Texts).Append(", ")
+                .Append("BeginNode = ").Append(BeginNode).Append(", ")
+                .Append("Nodes = ").Append(Nodes).Append(", ")
                 .Append("NextBranches.Count = ").Append(NextBranches.Count).Append('}')
                 .ToString();
         }
@@ -78,18 +68,18 @@ public class Dialog
     {
     }
 
-    public Dialog(Dialog dialog)
+    public Dialog(Dialog<TBranchBeginNode, TBranchNode> dialog)
     {
         Name = dialog.Name;
-        Start = dialog.Start.Copy();
+        Start = (Branch<TBranchBeginNode, TBranchNode>) dialog.Start.Clone();
     }
 
-    public Dialog Copy() => new(this);
+    public object Clone() => new Dialog<TBranchBeginNode, TBranchNode>(this);
 
     public override string ToString()
     {
         return new StringBuilder()
-            .Append(nameof(Dialog)).Append('{')
+            .Append(nameof(Dialog<TBranchBeginNode, TBranchNode>)).Append('{')
             .Append("Name = ").Append(Name).Append(", ")
             .Append("Start = ").Append(Start).Append('}')
             .ToString();
