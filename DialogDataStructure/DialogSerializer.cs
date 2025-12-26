@@ -9,8 +9,8 @@ namespace DialogDataStructure;
 public static class DialogSerializer
 {
     public static Dialog<T1, T2> Load<T1, T2>(string filepath)
-        where T1 : ICloneable
-        where T2 : ICloneable
+        where T1 : ICloneable, new()
+        where T2 : ICloneable, new()
     {
         var d = filepath.EndsWith(".json") ? JsonSerializer.Deserialize<Dialog<T1, T2>>(File.ReadAllText(filepath))! :
                     throw new Exception("Unknown file format");

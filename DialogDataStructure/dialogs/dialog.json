@@ -17,7 +17,9 @@
     ],
     "NextBranches": [
       {
-        "BeginNode": "Isn't it 1?",
+        "BeginNode": {
+          "Text": "Isn't it 1?"
+        },
         "Nodes": [
           {
             "Name": "Npc",
@@ -42,7 +44,9 @@
         ]
       },
       {
-        "BeginNode": "Oh, I know! The answer is 2!",
+        "BeginNode": {
+          "Text": "Oh, I know! The answer is 2!"
+        },
         "Nodes": [
           {
             "Name": "Npc",
@@ -67,7 +71,9 @@
         ]
       },
       {
-        "BeginNode": "It's definitely 3.",
+        "BeginNode": {
+          "Text": "It's definitely 3."
+        },
         "Nodes": [
           {
             "Name": "Npc",
@@ -76,7 +82,9 @@
         ]
       },
       {
-        "BeginNode": "Ugh...",
+        "BeginNode": {
+          "Text": "Ugh..."
+        },
         "Nodes": [
           {
             "Name": "Npc",
@@ -93,7 +101,9 @@
         ]
       },
       {
-        "BeginNode": "00000010",
+        "BeginNode": {
+          "Text": "00000010"
+        },
         "Nodes": [
           {
             "Name": "Npc",

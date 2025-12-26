@@ -8,12 +8,12 @@ internal static class Program
         DialogSerializer.Save(dialog, "../../../dialogs/dialog.tmp.json");
         
         Util.ConsoleRunDialog(dialog);
-        Util.ConsoleRunDialog(DialogSerializer.Load<string, Util.NameText>("../../../dialogs/dialog.json"));
+        Util.ConsoleRunDialog(DialogSerializer.Load<Util.SingleText, Util.NameText>("../../../dialogs/dialog.json"));
     }
 
-    private static Dialog<string, Util.NameText> ExampleDialogBuilder()
+    private static Dialog<Util.SingleText, Util.NameText> ExampleDialogBuilder()
     {
-        return DialogBuilder<string, Util.NameText>
+        return DialogBuilder<Util.SingleText, Util.NameText>
             .Create("Example dialog cat")
             .StartBranch(start => start
                 .Nodes(
