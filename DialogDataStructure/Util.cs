@@ -4,6 +4,11 @@ using System.Threading;
 
 namespace DialogDataStructure;
 
+/// <summary>
+/// Utility class for Dialog. Provides a few
+/// basic structs that can be used in dialog
+/// and console methods to interact with dialogs.
+/// </summary>
 public static class Util
 {
     public struct SingleText(string text = "") : ICloneable
@@ -27,6 +32,14 @@ public static class Util
     
     /*******************************************************************/
     
+    /// <summary>
+    /// Prints branch nodes to the console.
+    /// </summary>
+    /// <param name="branch">The branch to print its nodes.</param>
+    /// <param name="sleepMillis">Sleep duration.</param>
+    /// <param name="color">Text color in the Console.</param>
+    /// <typeparam name="T1">First generic type of the Dialog.</typeparam>
+    /// <typeparam name="T2">Second generic type of the Dialog.</typeparam>
     public static void ConsoleWriteBranchNodes<T1, T2>(Dialog<T1, T2>.Branch<T1, T2> branch, int sleepMillis = 0, ConsoleColor? color = null)
         where T1 : ICloneable
         where T2 : ICloneable
@@ -41,6 +54,13 @@ public static class Util
         Console.ResetColor();
     }
 
+    /// <summary>
+    /// Prints beginning nodes of subsequent branches of the given branch and formats them into a choice selection.
+    /// </summary>
+    /// <param name="branch">THe branch to print choices from.</param>
+    /// <param name="color">Text color in the console.</param>
+    /// <typeparam name="T1">First generic type of the Dialog.</typeparam>
+    /// <typeparam name="T2">Second generic type of the Dialog.</typeparam>
     public static void ConsoleWriteBranchChoices<T1, T2>(Dialog<T1, T2>.Branch<T1, T2> branch, ConsoleColor? color = null)
         where T1 : ICloneable
         where T2 : ICloneable
@@ -52,6 +72,17 @@ public static class Util
         Console.ResetColor();
     }
 
+    /// <summary>
+    /// Retrieves a choice from the console.
+    /// It reads a single digit int (base 10)
+    /// and turns it into an index of the branch
+    /// (in a list) that was choosen.
+    /// </summary>
+    /// <param name="branch">The branch to get options from.</param>
+    /// <param name="choice">out int - A var to store the index.</param>
+    /// <param name="color">Text color in the console.</param>
+    /// <typeparam name="T1"></typeparam>
+    /// <typeparam name="T2"></typeparam>
     public static void ConsoleReadBranchChoice<T1, T2>(Dialog<T1, T2>.Branch<T1, T2> branch, out int choice, ConsoleColor? color = null)
         where T1 : ICloneable
         where T2 : ICloneable
@@ -72,6 +103,13 @@ public static class Util
         }
     }
 
+    /// <summary>
+    /// A console walk-through of the dialog.
+    /// </summary>
+    /// <param name="dialog">The dialog.</param>
+    /// <param name="sleepMillis">Delay time.</param>
+    /// <typeparam name="T1">First generic type of the Dialog.</typeparam>
+    /// <typeparam name="T2">Second generic type of the Dialog.</typeparam>
     public static void ConsoleRunDialog<T1, T2>(Dialog<T1, T2> dialog, int sleepMillis = 500)
         where T1 : ICloneable
         where T2 : ICloneable
