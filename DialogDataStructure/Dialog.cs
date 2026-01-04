@@ -27,8 +27,8 @@ public class Dialog<TBranchBeginNode, TBranchNode> : ICloneable
 
         public void OnSerializing()
         {
-            if (Nodes.Count == 0) Nodes = null;
-            if (NextBranches.Count == 0) NextBranches = null;
+            if (Nodes.Count == 0) Nodes = null!;
+            if (NextBranches.Count == 0) NextBranches = null!;
         }
 
         public void OnSerialized()
