@@ -8,6 +8,14 @@ namespace DialogDataStructure;
 
 public static class DialogSerializer
 {
+    private static readonly JsonSerializerOptions Options = new()
+    {
+        WriteIndented = true,
+        IndentSize = 2,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+    };
+    
     public static Dialog<T1, T2> Load<T1, T2>(string filepath)
         where T1 : ICloneable, new()
         where T2 : ICloneable, new()
@@ -23,13 +31,7 @@ public static class DialogSerializer
         where T2 : ICloneable
     {
         if (filepath.EndsWith(".json"))
-            File.WriteAllText(filepath, JsonSerializer.Serialize(d, new JsonSerializerOptions
-            {
-                WriteIndented = true,
-                IndentSize = 2,
-                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-            }));
+            File.WriteAllText(filepath, JsonSerializer.Serialize(d, Options));
         else
             throw new Exception("Unknown file format");
     }
