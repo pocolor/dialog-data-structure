@@ -71,7 +71,7 @@ public class Dialog<TBranchBeginNode, TBranchNode> : ICloneable
     public Dialog(Dialog<TBranchBeginNode, TBranchNode> dialog)
     {
         Name = dialog.Name;
-        Start = (Branch<TBranchBeginNode, TBranchNode>) dialog.Start.Clone();
+        Start = new Branch<TBranchBeginNode, TBranchNode>(dialog.Start);
     }
 
     public object Clone() => new Dialog<TBranchBeginNode, TBranchNode>(this);
